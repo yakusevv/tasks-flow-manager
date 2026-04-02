@@ -1,12 +1,24 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
+from core.flow_engine import FlowCycleError, FlowEngine
+from core.flow_loader import FlowLoader, FlowNotFoundError
+from core.registry import task_registry
 from models.flow import FlowRunResultSchema
 
-
 router = APIRouter()
+flow_loader = FlowLoader()
 
 
 @router.post("/flows/{flow_id}/run", response_model=FlowRunResultSchema)
 async def run_flow(flow_id: str):
-    """Endpoint to run a flow by its ID."""
-    raise HTTPException(status_code=501, detail="FlowEngine not yet implemented")
+    """Run a flow by its ID."""
+    try:
+        config = flow_loader.load(flow_id)
+    except FlowNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+
+    try:
+        engine = FlowEngine(config=config, registry=task_registry)
+        return await engine.run()
+    except FlowCycleError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
