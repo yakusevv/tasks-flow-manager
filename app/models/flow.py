@@ -15,7 +15,6 @@ class TaskOutcomeEnum(StrEnum):
 class FlowOutcomeEnum(StrEnum):
     COMPLETED = "completed"
     ENDED_EARLY = "ended_early"
-    FAILED = "failed"
 
 
 class TaskConfigSchema(BaseModel):
