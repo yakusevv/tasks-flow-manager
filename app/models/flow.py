@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Any
+from typing import Optional
 
 from pydantic import BaseModel, model_validator
 
@@ -84,8 +84,8 @@ class FlowConfigSchema(BaseModel):
 class TaskResultSchema(BaseModel):
     task_name: str
     outcome: TaskOutcomeEnum
-    data: Any = None
-    error: str | None = None
+    data: Optional[dict] = None
+    error: Optional[str] = None
 
 
 class FlowContextSchema(BaseModel):
