@@ -4,6 +4,9 @@ from typing import Optional
 from pydantic import BaseModel, model_validator
 
 
+END = "end"
+
+
 class TaskOutcomeEnum(StrEnum):
     SUCCESS = "success"
     FAILURE = "failure"
@@ -40,7 +43,7 @@ class FlowConfigSchema(BaseModel):
     def validate_flow(self) -> "FlowConfigSchema":
         errors: list[str] = []
         task_names: set[str] = {t.name for t in self.tasks}
-        valid_targets = task_names | {"end"}
+        valid_targets = task_names | {END}
 
         if self.start_task not in task_names:
             errors.append(
