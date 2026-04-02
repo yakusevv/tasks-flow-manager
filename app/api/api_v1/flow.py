@@ -3,10 +3,16 @@ from fastapi import APIRouter, HTTPException, status
 from core.flow_engine import FlowCycleError, FlowEngine
 from core.flow_loader import FlowLoader, FlowNotFoundError
 from core.registry import task_registry
-from models.flow import FlowRunResultSchema
+from models.flow import FlowConfigSchema, FlowRunResultSchema
 
 router = APIRouter()
 flow_loader = FlowLoader()
+
+
+@router.get("/flows", response_model=list[FlowConfigSchema])
+async def list_flows():
+    """List all available flows."""
+    return flow_loader.list_all()
 
 
 @router.post("/flows/{flow_id}/run", response_model=FlowRunResultSchema)
