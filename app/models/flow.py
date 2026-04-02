@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class TaskOutcomeEnum(StrEnum):
@@ -35,6 +35,50 @@ class FlowConfigSchema(BaseModel):
     start_task: str
     tasks: list[TaskConfigSchema]
     conditions: list[ConditionConfigSchema]
+
+    @model_validator(mode="after")
+    def validate_flow(self) -> "FlowConfigSchema":
+        errors: list[str] = []
+        task_names: set[str] = {t.name for t in self.tasks}
+        valid_targets = task_names | {"end"}
+
+        if self.start_task not in task_names:
+            errors.append(
+                f"start_task '{self.start_task}' does not match any task name"
+            )
+
+        seen_tasks: set[str] = set()
+        for task in self.tasks:
+            if task.name in seen_tasks:
+                errors.append(f"Duplicate task name: '{task.name}'")
+            seen_tasks.add(task.name)
+
+        seen_conditions: set[str] = set()
+        for condition in self.conditions:
+            if condition.name in seen_conditions:
+                errors.append(f"Duplicate condition name: '{condition.name}'")
+            seen_conditions.add(condition.name)
+
+            if condition.source_task not in task_names:
+                errors.append(
+                    f"Condition '{condition.name}': source_task '{condition.source_task}' "
+                    "does not match any task"
+                )
+            if condition.target_task_success not in valid_targets:
+                errors.append(
+                    f"Condition '{condition.name}': target_task_success "
+                    f"'{condition.target_task_success}' does not match any task or 'end'"
+                )
+            if condition.target_task_failure not in valid_targets:
+                errors.append(
+                    f"Condition '{condition.name}': target_task_failure "
+                    f"'{condition.target_task_failure}' does not match any task or 'end'"
+                )
+
+        if errors:
+            raise ValueError(errors)
+
+        return self
 
 
 class TaskResultSchema(BaseModel):
