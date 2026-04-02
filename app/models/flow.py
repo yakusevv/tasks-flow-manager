@@ -83,6 +83,10 @@ class FlowConfigSchema(BaseModel):
         return self
 
 
+class TaskInfoSchema(BaseModel):
+    name: str
+
+
 class TaskResultSchema(BaseModel):
     task_name: str
     outcome: TaskOutcomeEnum
