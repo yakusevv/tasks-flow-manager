@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 
 from api.api_v1.api import api as api_v1
+from core.logging import configure_logging
 
+configure_logging()
 
 app = FastAPI(title="Flow Manager", version="0.1.0")
 
