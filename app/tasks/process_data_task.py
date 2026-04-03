@@ -14,7 +14,11 @@ class ProcessDataTask(BaseTask):
         records: list = []
         for fetch_task in self._fetch_tasks:
             fetch_result = context.results.get(fetch_task)
-            if fetch_result is None or fetch_result.outcome != TaskOutcomeEnum.SUCCESS:
+            if (
+                fetch_result is None
+                or fetch_result.data is None
+                or fetch_result.outcome != TaskOutcomeEnum.SUCCESS
+            ):
                 continue
 
             records += fetch_result.data.get("records", [])

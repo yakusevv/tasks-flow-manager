@@ -16,6 +16,7 @@ class StoreDataTask(BaseTask):
             process_result = context.results.get(process_task)
             if (
                 process_result is None
+                or process_result.data is None
                 or process_result.outcome != TaskOutcomeEnum.SUCCESS
             ):
                 continue
