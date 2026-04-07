@@ -17,6 +17,11 @@ dev = ["httpx>=0.28.1", "mypy>=1.20.0", "pytest-asyncio>=1.3.0"]
 mypy_path = "app"
 explicit_package_bases = true
 
+[tool.pyright]
+extraPaths = ["app"]
+venvPath = "."
+venv = ".venv"
+
 [tool.pytest.ini_options]
 pythonpath = ["app", "tests"]
 testpaths = ["tests"]
