@@ -1,0 +1,14 @@
+# Dependencies / virtual env
+.venv/
+__pycache__/
+
+# Lock files
+uv.lock
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.crt
