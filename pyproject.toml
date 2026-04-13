@@ -21,13 +21,8 @@ dev = [
 ]
 
 [tool.mypy]
-mypy_path = "app"
+mypy_path = ["app", "tests"]
 explicit_package_bases = true
-
-[tool.pyright]
-extraPaths = ["app"]
-venvPath = "."
-venv = ".venv"
 
 [tool.pytest.ini_options]
 pythonpath = ["app", "tests"]
