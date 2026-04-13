@@ -24,29 +24,38 @@ def flows_file(tmp_path):
     return f
 
 
-def test_flow_loader_load_valid_flow(flows_file):
+async def test_flow_loader_load_valid_flow(flows_file):
+    # given
     loader = FlowLoader(flows_file=flows_file)
 
-    config = loader.load("flow1")
+    # when
+    config = await loader.load("flow1")
 
+    # then
     assert isinstance(config, FlowConfigSchema)
     assert config.id == "flow1"
     assert config.name == "Flow One"
 
 
-def test_flow_loader_load_not_found_raises(flows_file):
+async def test_flow_loader_load_not_found_raises(flows_file):
+    # given
     loader = FlowLoader(flows_file=flows_file)
 
+    # when
     with pytest.raises(FlowNotFoundError) as exc_info:
-        loader.load("nonexistent")
+        await loader.load("nonexistent")
 
+    # then
     assert "nonexistent" in str(exc_info.value)
 
 
-def test_flow_loader_list_all(flows_file):
+async def test_flow_loader_list_all(flows_file):
+    # given
     loader = FlowLoader(flows_file=flows_file)
 
-    all_flows = loader.list_all()
+    # when
+    all_flows = await loader.list_all()
 
+    # then
     assert len(all_flows) == 1
     assert all_flows[0].id == "flow1"

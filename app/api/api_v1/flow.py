@@ -1,25 +1,25 @@
 from fastapi import APIRouter, HTTPException, status
 
+from core.dependencies import FlowLoaderDep
 from core.flow_engine import FlowCycleError, FlowEngine
-from core.flow_loader import FlowLoader, FlowNotFoundError
+from core.flow_loader import FlowNotFoundError
 from core.registry import task_registry
 from models.flow import FlowConfigSchema, FlowRunResultSchema
 
 router = APIRouter()
-flow_loader = FlowLoader()
 
 
 @router.get("/flows", response_model=list[FlowConfigSchema])
-async def list_flows():
+async def list_flows(flow_loader: FlowLoaderDep):
     """List all available flows."""
-    return flow_loader.list_all()
+    return await flow_loader.list_all()
 
 
 @router.post("/flows/{flow_id}/run", response_model=FlowRunResultSchema)
-async def run_flow(flow_id: str):
+async def run_flow(flow_id: str, flow_loader: FlowLoaderDep):
     """Run a flow by its ID."""
     try:
-        config = flow_loader.load(flow_id)
+        config = await flow_loader.load(flow_id)
     except FlowNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
 

@@ -6,6 +6,14 @@ from models.flow import FlowOutcomeEnum, FlowRunResultSchema
 
 
 def test_run_flow_success(client):
+    # given
+    from core.dependencies import get_flow_loader
+    from main import app
+
+    mock_loader = AsyncMock()
+    mock_loader.load = AsyncMock(return_value=MagicMock())
+    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+
     mock_result = FlowRunResultSchema(
         flow_id="flow123",
         completed_tasks=["task1", "task2", "task3"],
@@ -15,12 +23,11 @@ def test_run_flow_success(client):
     mock_engine = MagicMock()
     mock_engine.run = AsyncMock(return_value=mock_result)
 
-    with (
-        patch("api.api_v1.flow.flow_loader.load"),
-        patch("api.api_v1.flow.FlowEngine", return_value=mock_engine),
-    ):
+    # when
+    with patch("api.api_v1.flow.FlowEngine", return_value=mock_engine):
         response = client.post("/v1/flows/flow123/run")
 
+    # then
     assert response.status_code == 200
     data = response.json()
     assert data["flow_id"] == "flow123"
@@ -29,24 +36,38 @@ def test_run_flow_success(client):
 
 
 def test_run_flow_not_found(client):
-    with patch(
-        "api.api_v1.flow.flow_loader.load", side_effect=FlowNotFoundError("missing")
-    ):
-        response = client.post("/v1/flows/missing/run")
+    # given
+    from core.dependencies import get_flow_loader
+    from main import app
 
+    mock_loader = AsyncMock()
+    mock_loader.load = AsyncMock(side_effect=FlowNotFoundError("missing"))
+    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+
+    # when
+    response = client.post("/v1/flows/missing/run")
+
+    # then
     assert response.status_code == 404
     assert "missing" in response.json()["detail"]
 
 
 def test_run_flow_cycle_error(client):
+    # given
+    from core.dependencies import get_flow_loader
+    from main import app
+
+    mock_loader = AsyncMock()
+    mock_loader.load = AsyncMock(return_value=MagicMock())
+    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+
     mock_engine = MagicMock()
     mock_engine.run = AsyncMock(side_effect=FlowCycleError("task1"))
 
-    with (
-        patch("api.api_v1.flow.flow_loader.load"),
-        patch("api.api_v1.flow.FlowEngine", return_value=mock_engine),
-    ):
+    # when
+    with patch("api.api_v1.flow.FlowEngine", return_value=mock_engine):
         response = client.post("/v1/flows/flow123/run")
 
+    # then
     assert response.status_code == 409
     assert "task1" in response.json()["detail"]

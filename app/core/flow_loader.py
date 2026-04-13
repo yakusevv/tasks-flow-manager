@@ -20,13 +20,13 @@ class FlowLoader:
     def _read_all_raw(self) -> dict:
         return json.loads(self.flows_file.read_text())
 
-    def load(self, flow_id: str) -> FlowConfigSchema:
+    async def load(self, flow_id: str) -> FlowConfigSchema:
         raw = self._read_all_raw()
         if flow_id not in raw:
             raise FlowNotFoundError(flow_id)
         return FlowConfigSchema.model_validate({"id": flow_id, **raw[flow_id]})
 
-    def list_all(self) -> list[FlowConfigSchema]:
+    async def list_all(self) -> list[FlowConfigSchema]:
         raw = self._read_all_raw()
         return [
             FlowConfigSchema.model_validate({"id": flow_id, **flow_data})

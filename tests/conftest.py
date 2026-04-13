@@ -24,3 +24,11 @@ def registry_with_mocks() -> TaskRegistry:
 def client():
     from main import app
     return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def clear_dependency_overrides():
+    yield
+    from core.dependencies import get_flow_loader
+    from main import app
+    app.dependency_overrides.pop(get_flow_loader, None)
