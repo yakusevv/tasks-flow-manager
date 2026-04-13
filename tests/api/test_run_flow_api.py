@@ -5,14 +5,9 @@ from core.flow_loader import FlowNotFoundError
 from models.flow import FlowOutcomeEnum, FlowRunResultSchema
 
 
-def test_run_flow_success(client):
+def test_run_flow_success(client, mock_flow_loader: AsyncMock):
     # given
-    from core.dependencies import get_flow_loader
-    from main import app
-
-    mock_loader = AsyncMock()
-    mock_loader.load = AsyncMock(return_value=MagicMock())
-    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+    mock_flow_loader.load = AsyncMock(return_value=MagicMock())
 
     mock_result = FlowRunResultSchema(
         flow_id="flow123",
@@ -35,14 +30,9 @@ def test_run_flow_success(client):
     assert data["completed_tasks"] == ["task1", "task2", "task3"]
 
 
-def test_run_flow_not_found(client):
+def test_run_flow_not_found(client, mock_flow_loader: AsyncMock):
     # given
-    from core.dependencies import get_flow_loader
-    from main import app
-
-    mock_loader = AsyncMock()
-    mock_loader.load = AsyncMock(side_effect=FlowNotFoundError("missing"))
-    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+    mock_flow_loader.load = AsyncMock(side_effect=FlowNotFoundError("missing"))
 
     # when
     response = client.post("/v1/flows/missing/run")
@@ -52,14 +42,9 @@ def test_run_flow_not_found(client):
     assert "missing" in response.json()["detail"]
 
 
-def test_run_flow_cycle_error(client):
+def test_run_flow_cycle_error(client, mock_flow_loader: AsyncMock):
     # given
-    from core.dependencies import get_flow_loader
-    from main import app
-
-    mock_loader = AsyncMock()
-    mock_loader.load = AsyncMock(return_value=MagicMock())
-    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+    mock_flow_loader.load = AsyncMock(return_value=MagicMock())
 
     mock_engine = MagicMock()
     mock_engine.run = AsyncMock(side_effect=FlowCycleError("task1"))

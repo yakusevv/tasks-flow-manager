@@ -1,3 +1,4 @@
+import asyncio
 import json
 from pathlib import Path
 
@@ -17,17 +18,18 @@ class FlowLoader:
     def __init__(self, flows_file: Path = FLOWS_FILE) -> None:
         self.flows_file = flows_file
 
-    def _read_all_raw(self) -> dict:
-        return json.loads(self.flows_file.read_text())
+    async def _read_all_raw(self) -> dict:
+        text = await asyncio.to_thread(self.flows_file.read_text)
+        return json.loads(text)
 
     async def load(self, flow_id: str) -> FlowConfigSchema:
-        raw = self._read_all_raw()
+        raw = await self._read_all_raw()
         if flow_id not in raw:
             raise FlowNotFoundError(flow_id)
         return FlowConfigSchema.model_validate({"id": flow_id, **raw[flow_id]})
 
     async def list_all(self) -> list[FlowConfigSchema]:
-        raw = self._read_all_raw()
+        raw = await self._read_all_raw()
         return [
             FlowConfigSchema.model_validate({"id": flow_id, **flow_data})
             for flow_id, flow_data in raw.items()

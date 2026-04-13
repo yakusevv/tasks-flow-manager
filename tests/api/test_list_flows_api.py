@@ -3,15 +3,10 @@ from unittest.mock import AsyncMock
 from helpers import make_flow_config
 
 
-def test_list_flows(client):
+def test_list_flows(client, mock_flow_loader: AsyncMock):
     # given
-    from core.dependencies import get_flow_loader
-    from main import app
-
     flows = [make_flow_config("flow1"), make_flow_config("flow2")]
-    mock_loader = AsyncMock()
-    mock_loader.list_all = AsyncMock(return_value=flows)
-    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+    mock_flow_loader.list_all = AsyncMock(return_value=flows)
 
     # when
     response = client.get("/v1/flows")
@@ -24,14 +19,9 @@ def test_list_flows(client):
     assert data[1]["id"] == "flow2"
 
 
-def test_list_flows_empty(client):
+def test_list_flows_empty(client, mock_flow_loader: AsyncMock):
     # given
-    from core.dependencies import get_flow_loader
-    from main import app
-
-    mock_loader = AsyncMock()
-    mock_loader.list_all = AsyncMock(return_value=[])
-    app.dependency_overrides[get_flow_loader] = lambda: mock_loader
+    mock_flow_loader.list_all = AsyncMock(return_value=[])
 
     # when
     response = client.get("/v1/flows")

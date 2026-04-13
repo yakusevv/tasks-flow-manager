@@ -1,8 +1,12 @@
+from unittest.mock import AsyncMock
+
 import pytest
 from starlette.testclient import TestClient
 
+from core.dependencies import get_flow_loader
 from core.task_registry import TaskRegistry
 from helpers import make_flow_config, make_mock_task
+from main import app
 from models.flow import FlowConfigSchema, TaskOutcomeEnum
 
 
@@ -22,13 +26,17 @@ def registry_with_mocks() -> TaskRegistry:
 
 @pytest.fixture
 def client():
-    from main import app
     return TestClient(app)
+
+
+@pytest.fixture
+def mock_flow_loader() -> AsyncMock:
+    loader = AsyncMock()
+    app.dependency_overrides[get_flow_loader] = lambda: loader
+    return loader
 
 
 @pytest.fixture(autouse=True)
 def clear_dependency_overrides():
     yield
-    from core.dependencies import get_flow_loader
-    from main import app
     app.dependency_overrides.pop(get_flow_loader, None)
