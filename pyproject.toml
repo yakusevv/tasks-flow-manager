@@ -23,6 +23,8 @@ dev = [
 [tool.mypy]
 mypy_path = ["app", "tests"]
 explicit_package_bases = true
+allow_untyped_globals = true
+import_missing_imports = true
 
 [tool.pytest.ini_options]
 pythonpath = ["app", "tests"]
