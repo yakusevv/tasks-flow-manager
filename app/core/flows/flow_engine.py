@@ -1,6 +1,7 @@
 import logging
 
 from core.flows.condition_evaluator import ConditionEvaluator
+from core.flows.exceptions import FlowCycleError
 from core.tasks.registry import TaskRegistry
 from models.flow import (
     END,
@@ -12,13 +13,6 @@ from models.flow import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class FlowCycleError(Exception):
-    def __init__(self, task_name: str) -> None:
-        super().__init__(
-            f"Cycle detected: task '{task_name}' has already been executed"
-        )
 
 
 class FlowEngine:

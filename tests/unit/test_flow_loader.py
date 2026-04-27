@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from core.flow_loader import FlowLoader, FlowNotFoundError
+from core.file_flow_loader import FlowLoader, FlowNotFoundError
 from models.flow import FlowConfigSchema
 
 VALID_FLOWS = {

@@ -2,16 +2,11 @@ import asyncio
 import json
 from pathlib import Path
 
+from core.flows.exceptions import FlowNotFoundError
 from models.flow import FlowConfigSchema
 
 
 FLOWS_FILE = Path(__file__).parent.parent.parent / "config" / "flows.json"
-
-
-class FlowNotFoundError(Exception):
-    def __init__(self, flow_id: str) -> None:
-        self.flow_id = flow_id
-        super().__init__(f"Flow '{flow_id}' not found in flows.json")
 
 
 class FlowLoader:

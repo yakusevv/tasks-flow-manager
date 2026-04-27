@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from core.flow_engine import FlowCycleError
-from core.flow_loader import FlowNotFoundError
+from core.file_flow_loader import FlowNotFoundError
 from models.flow import FlowOutcomeEnum, FlowRunResultSchema
 
 

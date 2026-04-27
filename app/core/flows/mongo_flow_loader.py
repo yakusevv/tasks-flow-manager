@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-from core.flows.flow_loader import FlowNotFoundError
+from core.flows.exceptions import FlowNotFoundError
 from models.flow import FlowConfigSchema
 
 _MAX_FLOWS = 1000
