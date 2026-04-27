@@ -8,8 +8,7 @@ services:
       MONGODB_DB: flows_manager
       MONGODB_COLLECTION: flows
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
 
   mongodb:
     image: mongo:8
@@ -17,11 +16,6 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
 volumes:
   mongodb_data:
