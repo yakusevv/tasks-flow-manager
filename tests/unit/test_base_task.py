@@ -1,7 +1,7 @@
 import pytest
 
 from models.flow import FlowContextSchema, TaskOutcomeEnum
-from tasks.base_task import BaseTask
+from core.tasks.base_task import BaseTask
 
 
 class SuccessTask(BaseTask):

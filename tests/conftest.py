@@ -4,7 +4,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from core.dependencies import get_flow_loader
-from core.task_registry import TaskRegistry
+from core.tasks.task_registry import TaskRegistry
 from helpers import make_flow_config, make_mock_task
 from main import app
 from models.flow import FlowConfigSchema, TaskOutcomeEnum

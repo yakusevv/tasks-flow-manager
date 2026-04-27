@@ -1,5 +1,5 @@
 from models.flow import FlowContextSchema
-from tasks.base_task import BaseTask
+from core.tasks.base_task import BaseTask
 
 
 class FetchDataTask(BaseTask):

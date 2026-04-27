@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 
 from core.dependencies import FlowLoaderDep
-from core.flow_engine import FlowCycleError, FlowEngine
-from core.flow_loader import FlowNotFoundError
-from core.registry import task_registry
+from core.flows.flow_engine import FlowCycleError, FlowEngine
+from core.flows.flow_loader import FlowNotFoundError
+from core.tasks.registry import task_registry
 from models.flow import FlowConfigSchema, FlowRunResultSchema
 
 router = APIRouter()

@@ -31,14 +31,15 @@ The app is a FastAPI service that executes named flows — sequences of async ta
 
 - `app/main.py` — FastAPI app entry point; mounts the v1 router
 - `app/api/api_v1/` — route handlers for `/v1/flows` and `/v1/tasks`
-- `app/core/` — execution engine, flow config loader, task registry, condition evaluator
-- `app/tasks/` — concrete task implementations (subclass `BaseTask`)
+- `app/core/` — top-level core: config, dependencies, logging, condition evaluator, task registry
+- `app/core/flows/` — flow loading and execution: `FlowLoader`, `MongoFlowLoader`, `FlowEngine`, `FlowLoaderProtocol`
+- `app/core/tasks/` — `BaseTask` and concrete task implementations
 - `app/models/flow.py` — all Pydantic schemas used throughout the app
 - `config/flows.json` — static flow definitions (loaded at startup via `FlowLoader`)
 
 **Execution model:**
 
-1. `FlowLoader` parses `config/flows.json` into `FlowConfigSchema` objects (validated by Pydantic, including referential integrity checks).
+1. `FlowLoader` (file-based) or `MongoFlowLoader` (MongoDB-based) parses flow definitions into `FlowConfigSchema` objects. Both implement `FlowLoaderProtocol`; the active loader is chosen at startup based on whether `MONGODB_URI` is set.
 2. `FlowEngine.run()` walks the flow: starting at `start_task`, executing each task via `BaseTask.execute()`, then calling `ConditionEvaluator.next_task()` to determine the next step based on `success`/`failure` outcome.
 3. Tasks share a `FlowContextSchema` — results from previous tasks are accessible via `context.results[task_name]`.
 4. A visited-set detects cycles; duplicate execution raises `FlowCycleError` (→ HTTP 409).
@@ -46,7 +47,7 @@ The app is a FastAPI service that executes named flows — sequences of async ta
 
 **Adding a new task:**
 
-1. Subclass `BaseTask` in `app/tasks/`, set `name`, implement `async run(context)`.
+1. Subclass `BaseTask` in `app/core/tasks/`, set `name`, implement `async run(context)`.
 2. Register the instance in `app/core/registry.py`.
 3. Reference the task by name in `config/flows.json`.
 

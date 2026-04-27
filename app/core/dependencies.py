@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
-from core.flow_loader_protocol import FlowLoaderProtocol
+from core.flows.flow_loader_protocol import FlowLoaderProtocol
 
 
 def get_flow_loader(request: Request) -> FlowLoaderProtocol:

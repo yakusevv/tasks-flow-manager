@@ -1,7 +1,7 @@
 import logging
 
 from models.flow import FlowContextSchema, TaskOutcomeEnum
-from tasks.base_task import BaseTask
+from core.tasks.base_task import BaseTask
 
 logger = logging.getLogger(__name__)
 

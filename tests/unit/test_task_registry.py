@@ -1,8 +1,8 @@
 import pytest
 
-from core.task_registry import TaskNotFoundError, TaskRegistry
+from core.tasks.task_registry import TaskNotFoundError, TaskRegistry
 from models.flow import FlowContextSchema
-from tasks.base_task import BaseTask
+from core.tasks.base_task import BaseTask
 
 
 class DummyTask(BaseTask):

@@ -1,6 +1,6 @@
 import logging
 
-from tasks.base_task import BaseTask
+from core.tasks.base_task import BaseTask
 
 logger = logging.getLogger(__name__)
 

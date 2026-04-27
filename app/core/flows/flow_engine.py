@@ -1,7 +1,7 @@
 import logging
 
-from core.condition_evaluator import ConditionEvaluator
-from core.task_registry import TaskRegistry
+from core.flows.condition_evaluator import ConditionEvaluator
+from core.tasks.registry import TaskRegistry
 from models.flow import (
     END,
     FlowConfigSchema,

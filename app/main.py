@@ -6,10 +6,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.api_v1.api import api as api_v1
 from core.config import Settings
-from core.flow_loader import FlowLoader
-from core.flow_loader_protocol import FlowLoaderProtocol
+from core.flows.flow_loader import FlowLoader
+from core.flows.flow_loader_protocol import FlowLoaderProtocol
 from core.logging import configure_logging
-from core.mongo_flow_loader import MongoFlowLoader
+from core.flows.mongo_flow_loader import MongoFlowLoader
 
 configure_logging()
 

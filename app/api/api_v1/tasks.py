@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from core.registry import task_registry
+from core.tasks.registry import task_registry
 from models.flow import TaskInfoSchema
 
 router = APIRouter()
