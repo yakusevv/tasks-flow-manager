@@ -1,13 +1,12 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import Depends, Request
 
-from core.flow_loader import FlowLoader
-from core.mongo_flow_loader import MongoFlowLoader
+from core.flow_loader_protocol import FlowLoaderProtocol
 
 
-def get_flow_loader(request: Request) -> Union[FlowLoader, MongoFlowLoader]:
+def get_flow_loader(request: Request) -> FlowLoaderProtocol:
     return request.app.state.flow_loader  # type: ignore[no-any-return]
 
 
-FlowLoaderDep = Annotated[Union[FlowLoader, MongoFlowLoader], Depends(get_flow_loader)]
+FlowLoaderDep = Annotated[FlowLoaderProtocol, Depends(get_flow_loader)]

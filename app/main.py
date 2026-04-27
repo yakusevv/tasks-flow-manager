@@ -7,6 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from api.api_v1.api import api as api_v1
 from core.config import Settings
 from core.flow_loader import FlowLoader
+from core.flow_loader_protocol import FlowLoaderProtocol
 from core.logging import configure_logging
 from core.mongo_flow_loader import MongoFlowLoader
 
@@ -16,6 +17,7 @@ configure_logging()
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = Settings()
+    loader: FlowLoaderProtocol
     if settings.mongodb_uri:
         client: AsyncIOMotorClient[dict] = AsyncIOMotorClient(settings.mongodb_uri)
         try:
@@ -23,13 +25,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         except Exception as exc:
             raise RuntimeError(f"Failed to connect to MongoDB: {exc}") from exc
         collection = client[settings.mongodb_db][settings.mongodb_collection]
-        app.state.flow_loader = MongoFlowLoader(collection)
+        loader = MongoFlowLoader(collection)
+        app.state.flow_loader = loader
         try:
             yield
         finally:
             client.close()
     else:
-        app.state.flow_loader = FlowLoader()
+        loader = FlowLoader()
+        app.state.flow_loader = loader
         yield
 
 
