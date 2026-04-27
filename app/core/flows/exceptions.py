@@ -4,6 +4,12 @@ class FlowNotFoundError(Exception):
         super().__init__(f"Flow '{flow_id}' not found")
 
 
+class FlowAlreadyExistsError(Exception):
+    def __init__(self, flow_id: str) -> None:
+        self.flow_id = flow_id
+        super().__init__(f"Flow '{flow_id}' already exists")
+
+
 class FlowCycleError(Exception):
     def __init__(self, task_name: str) -> None:
         super().__init__(

@@ -2,7 +2,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from core.flows.exceptions import FlowNotFoundError
+from core.flows.exceptions import FlowAlreadyExistsError, FlowNotFoundError
 from models.flow import FlowConfigSchema
 
 
@@ -29,3 +29,18 @@ class FlowLoader:
             FlowConfigSchema.model_validate({"id": flow_id, **flow_data})
             for flow_id, flow_data in raw.items()
         ]
+
+    async def create(self, flow: FlowConfigSchema) -> FlowConfigSchema:
+        raw = await self._read_all_raw()
+        if flow.id in raw:
+            raise FlowAlreadyExistsError(flow.id)
+        raw[flow.id] = flow.model_dump(exclude={"id"})
+        await asyncio.to_thread(self.flows_file.write_text, json.dumps(raw, indent=2))
+        return flow
+
+    async def delete(self, flow_id: str) -> None:
+        raw = await self._read_all_raw()
+        if flow_id not in raw:
+            raise FlowNotFoundError(flow_id)
+        del raw[flow_id]
+        await asyncio.to_thread(self.flows_file.write_text, json.dumps(raw, indent=2))

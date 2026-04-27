@@ -1,6 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo.errors import DuplicateKeyError
 
-from core.flows.exceptions import FlowNotFoundError
+from core.flows.exceptions import FlowAlreadyExistsError, FlowNotFoundError
 from models.flow import FlowConfigSchema
 
 _MAX_FLOWS = 1000
@@ -25,3 +26,16 @@ class MongoFlowLoader:
     async def list_all(self) -> list[FlowConfigSchema]:
         docs = await self._collection.find().to_list(length=_MAX_FLOWS)
         return [self._doc_to_schema(doc) for doc in docs]
+
+    async def create(self, flow: FlowConfigSchema) -> FlowConfigSchema:
+        doc = {"_id": flow.id, **flow.model_dump(exclude={"id"})}
+        try:
+            await self._collection.insert_one(doc)
+        except DuplicateKeyError:
+            raise FlowAlreadyExistsError(flow.id)
+        return flow
+
+    async def delete(self, flow_id: str) -> None:
+        result = await self._collection.delete_one({"_id": flow_id})
+        if result.deleted_count == 0:
+            raise FlowNotFoundError(flow_id)
