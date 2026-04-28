@@ -1,6 +1,6 @@
 import pytest
 
-from core.condition_evaluator import ConditionEvaluator
+from core.flows.condition_evaluator import ConditionEvaluator
 from models.flow import END, ConditionConfigSchema, TaskOutcomeEnum
 
 

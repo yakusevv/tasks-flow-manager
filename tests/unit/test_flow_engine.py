@@ -1,8 +1,10 @@
 import pytest
 
 from helpers import make_flow_config, make_mock_task
-from core.flow_engine import FlowCycleError, FlowEngine
-from core.tasks.task_registry import TaskNotFoundError, TaskRegistry
+from core.flows.exceptions import FlowCycleError
+from core.flows.flow_engine import FlowEngine
+from core.tasks.exceptions import TaskNotFoundError
+from core.tasks.task_registry import TaskRegistry
 from models.flow import FlowOutcomeEnum, TaskOutcomeEnum
 
 
